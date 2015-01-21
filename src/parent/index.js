@@ -21,11 +21,11 @@ socket.bind = function (methodName) {
             widget.element = widget.element || widget.getElement();
             widget.element.contentWindow.postMessage(message, '*');
         } catch (e) {
-            console.error("no access to widget object");
+            console.error('no access to widget object');
         }
     };
     widget.dispatchEvent({
-        type: "methodReady",
+        type: 'methodReady',
         payload: {
             methodName: methodName
         }
@@ -42,13 +42,13 @@ function checkMessage(event) {
     }
 
     if (data && method) {
-        if (method === "dispatchEvent") {
-            console.log("dispatchEvent called");
+        if (method === 'dispatchEvent') {
+            console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
-        } else if (method === "addMethod") {
+        } else if (method === 'addMethod') {
             socket.bind(data.arguments[0]);
         } else {
-            console.warn("uncaught " + data.method);
+            console.warn('uncaught ' + data.method);
         }
     }
 }

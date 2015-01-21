@@ -47,11 +47,11 @@ describe('iFrame url test', function() {
 		}
 		sendWindowMsg({
 			data: {
+				method: "addMethod",
 				arguments: [
 					"testMethod"
 				],
-				socket_id: iframe.data.socket_id,
-				method: "addMethod"
+				socket_id: iframe.data.socket_id
 			}
 		});
 	});

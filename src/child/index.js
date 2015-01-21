@@ -9,19 +9,19 @@ function onMessage(event) {
     var data = event.data || {},
         method = JSAPI[data.method] || {},
         args = data.arguments || [];
-    if (typeof args !== "object" || args.hasOwnProperty("length")) {
+    if (typeof args !== 'object' || args.hasOwnProperty('length')) {
         args = [args];
     }
-    if (method && typeof method === "function") {
+    if (method && typeof method === 'function') {
         data.returnedBy = data.method;
         delete data[method];
         try {
             data.response = method.apply(null, args);
          } catch (e) {
-             data.response = "error:" + e;
+             data.response = 'error:' + e;
          }
     }
-    if (data.hasOwnProperty("callback")) {
+    if (data.hasOwnProperty('callback')) {
     }
     data.iframeId = iframeId;
     pw.postMessage(data, "*");
@@ -31,16 +31,16 @@ function post() {
     var c = [];
     c = c.splice.call(arguments, 0);
     pw.postMessage({
-        "method" : c.shift(),
-        "arguments" : c,
-        "iframeId" : iframeId
+        method : c.shift(),
+        arguments : c,
+        iframeId : iframeId
     }, "*");
 }
 
 function addCallback(name, method) {
     JSAPI[name] = method;
     if (initialized) {
-        post("addMethod", name);
+        post('addMethod', name);
     }
 }
 
@@ -53,13 +53,13 @@ function call(method) {
 
 function addInitializeCallback() {
     //add JSAPI methods to the parent
-    addCallback("initialize", function (iframe) {
+    addCallback('initialize', function (iframe) {
         var method;
         iframeId = iframe;
         for (method in JSAPI) {
-            post("addMethod", method);
+            post('addMethod', method);
         }
-        delete JSAPI["initialize"];
+        delete JSAPI['initialize'];
         initialized = true;
         api.objectID = iframeId;
     });

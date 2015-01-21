@@ -1,4 +1,4 @@
-/*! iframe-external-interface - v1.0.0 - 2015-01-20
+/*! iframe-external-interface - v1.0.0 - 2015-01-21
 * Copyright (c) 2015 [object Object];*/
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -10829,11 +10829,11 @@ socket.bind = function (methodName) {
             widget.element = widget.element || widget.getElement();
             widget.element.contentWindow.postMessage(message, '*');
         } catch (e) {
-            console.error("no access to widget object");
+            console.error('no access to widget object');
         }
     };
     widget.dispatchEvent({
-        type: "methodReady",
+        type: 'methodReady',
         payload: {
             methodName: methodName
         }
@@ -10850,13 +10850,13 @@ function checkMessage(event) {
     }
 
     if (data && method) {
-        if (method === "dispatchEvent") {
-            console.log("dispatchEvent called");
+        if (method === 'dispatchEvent') {
+            console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
-        } else if (method === "addMethod") {
+        } else if (method === 'addMethod') {
             socket.bind(data.arguments[0]);
         } else {
-            console.warn("uncaught " + data.method);
+            console.warn('uncaught ' + data.method);
         }
     }
 }
@@ -11025,11 +11025,11 @@ describe('iFrame url test', function() {
 		}
 		sendWindowMsg({
 			data: {
+				method: "addMethod",
 				arguments: [
 					"testMethod"
 				],
-				socket_id: iframe.data.socket_id,
-				method: "addMethod"
+				socket_id: iframe.data.socket_id
 			}
 		});
 	});
