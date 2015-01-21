@@ -25,7 +25,7 @@ describe('iFrame url test', function() {
 	        testParam: "testMe"
 		},
 		iframe,
-		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;socket_id=";
+		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;widgetId=";
 
 	beforeEach(function () {
 		iframe = parentClass({
@@ -40,8 +40,8 @@ describe('iFrame url test', function() {
 		}).setElement(simIframe);
 	});
 
-	it('should produce the correct url with socket_id', function () {
-		if (iframe.data.src !== url + iframe.data.socket_id) {
+	it('should produce the correct url with widgetId', function () {
+		if (iframe.data.src !== url + iframe.data.widgetId) {
 			console.log("different?");
 			throw new Error("test method not returning correct string");
 		}
@@ -51,7 +51,7 @@ describe('iFrame url test', function() {
 				arguments: [
 					"testMethod"
 				],
-				socket_id: iframe.data.socket_id
+				widgetId: iframe.data.widgetId
 			}
 		});
 	});

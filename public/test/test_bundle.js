@@ -10792,36 +10792,36 @@ module.exports = api;
 },{}],59:[function(require,module,exports){
 var urlUtil = require('./urlUtil'),
 	tagUtil = require('./tagUtil'),
-	socketId = require ('./socketId');
+	widgetId = require ('./widgetId');
 
 module.exports = function (data) {
 	data.params.width = data.params.width || data.width || null;
 	data.params.height = data.params.height || data.height || null;
-	data.params.socket_id = socketId(16);
+	data.params.widgetId = widgetId(16);
 	var src = urlUtil(data);
 	return {
 		html: tagUtil(data, src),
 		src: src,
-		socket_id: data.params.socket_id
+		widgetId: data.params.widgetId
 	};
 };
-},{"./socketId":61,"./tagUtil":62,"./urlUtil":63}],60:[function(require,module,exports){
+},{"./tagUtil":61,"./urlUtil":62,"./widgetId":63}],60:[function(require,module,exports){
 var dispatcher = require('dispatch-token'),
     widget = dispatcher({
         api: {}
     }),
-    socket = dispatcher({
+    postMessageBus = dispatcher({
         api: {},
         widget: widget
     }),
     element,
     root;
 
-socket.bind = function (methodName) {
+postMessageBus.bind = function (methodName) {
     widget.api[methodName] = function () {
         var params = [],
             message = {
-                id : socket.id,
+                id : postMessageBus.id,
                 method : methodName,
                 arguments: params.splice.call(arguments, 0)
             };
@@ -10845,7 +10845,7 @@ function checkMessage(event) {
     var data = event.data || {},
         args = data.arguments,
         method = data.method || "";
-    if (socket.id !== data.socket_id) {
+    if (postMessageBus.id !== data.widgetId) {
         return;
     }
 
@@ -10854,7 +10854,7 @@ function checkMessage(event) {
             console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
         } else if (method === 'addMethod') {
-            socket.bind(data.arguments[0]);
+            postMessageBus.bind(data.arguments[0]);
         } else {
             console.warn('uncaught ' + data.method);
         }
@@ -10865,8 +10865,8 @@ function initialize(data) {
     //try { root = window; } catch (ignore) {}
     root = root || data.root;
     widget.data = require('./iFrameData')(data);
-    widget.api = socket.api;
-    socket.id = widget.data.socket_id;
+    widget.api = postMessageBus.api;
+    postMessageBus.id = widget.data.widgetId;
     widget.setElement = function (el) {
         element = el;
         return widget;
@@ -10881,17 +10881,6 @@ module.exports = function (data) {
 };
 
 },{"./iFrameData":59,"dispatch-token":33}],61:[function(require,module,exports){
-// unique identifier for the socket
-module.exports = function (l) {
-    var text = "",
-    	p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-    	i;
-    for (i=0; i < l; i += 1) {
-        text += p.charAt(Math.floor(Math.random() * p.length));
-    }
-    return text;
-};
-},{}],62:[function(require,module,exports){
 module.exports = function (data, src) {
 	var html = '<iframe ';
 	html += 'id="' + data.id + '" ';
@@ -10907,7 +10896,7 @@ module.exports = function (data, src) {
 	html += 'src="' + src + '"';
 	return html + '></iframe>';
 };
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 function stripSlashes(str) {
 	str = str || "";
 	return str.replace(/^\/+|\/+$/g, '');
@@ -10941,6 +10930,17 @@ function getIFrameSrc(data) {
 
 module.exports = function (config) {
 	return getIFrameSrc(config);
+};
+},{}],63:[function(require,module,exports){
+// unique identifier for the socket
+module.exports = function (l) {
+    var text = "",
+    	p = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+    	i;
+    for (i=0; i < l; i += 1) {
+        text += p.charAt(Math.floor(Math.random() * p.length));
+    }
+    return text;
 };
 },{}],64:[function(require,module,exports){
 var test_module = require("../../src/index"),
@@ -11003,7 +11003,7 @@ describe('iFrame url test', function() {
 	        testParam: "testMe"
 		},
 		iframe,
-		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;socket_id=";
+		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;widgetId=";
 
 	beforeEach(function () {
 		iframe = parentClass({
@@ -11018,8 +11018,8 @@ describe('iFrame url test', function() {
 		}).setElement(simIframe);
 	});
 
-	it('should produce the correct url with socket_id', function () {
-		if (iframe.data.src !== url + iframe.data.socket_id) {
+	it('should produce the correct url with widgetId', function () {
+		if (iframe.data.src !== url + iframe.data.widgetId) {
 			console.log("different?");
 			throw new Error("test method not returning correct string");
 		}
@@ -11029,7 +11029,7 @@ describe('iFrame url test', function() {
 				arguments: [
 					"testMethod"
 				],
-				socket_id: iframe.data.socket_id
+				widgetId: iframe.data.widgetId
 			}
 		});
 	});
@@ -11082,4 +11082,4 @@ describe('iFrame url test', function() {
 		}
 	});
 });
-},{"../../src/parent/urlUtil":63}]},{},[65,66,67,68,64]);
+},{"../../src/parent/urlUtil":62}]},{},[65,66,67,68,64]);
