@@ -29,14 +29,14 @@ describe('iFrame url test', function() {
 
 	beforeEach(function () {
 		iframe = parentClass({
-			"root": simWindow,
-		    "protocol": "http:",
-		    "domain": "www.site.com",
-		    "path": "",
-		    "id": "0jf28320h",
-		    "width": 640,
-		    "height": 360,
-		    "params": params
+			root: simWindow,
+		    protocol: "http:",
+		    domain: "www.site.com",
+		    path: "",
+		    id: "0jf28320h",
+		    width: 640,
+		    height: 360,
+		    params: params
 		}).setElement(simIframe);
 	});
 

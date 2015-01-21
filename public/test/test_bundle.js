@@ -10806,42 +10806,38 @@ module.exports = function (data) {
 	};
 };
 },{"./socketId":61,"./tagUtil":62,"./urlUtil":63}],60:[function(require,module,exports){
-var userToken = require('dispatch-token')({
+var dispatcher = require('dispatch-token'),
+    widget = dispatcher({
         api: {}
     }),
-    iFrameData = require('./iFrameData'),
-    socket = {
+    socket = dispatcher({
         api: {},
-        userToken: userToken
-    },
+        widget: widget
+    }),
     element,
     root;
-function dispatchMethodReady(method) {
-    socket.userToken.dispatchEvent({
-        type: "methodReady",
-        payload: {
-            methodName: method
-        }
-    });
-}
 
 socket.bind = function (methodName) {
-    var userToken = socket.userToken;
-    userToken.api[methodName] = function () {
+    widget.api[methodName] = function () {
         var params = [],
             message = {
                 id : socket.id,
-                method : methodName
+                method : methodName,
+                arguments: params.splice.call(arguments, 0)
             };
-        message.arguments = params.splice.call(arguments, 0);
         try {
-            userToken.element = userToken.element || userToken.getElement();
-            return userToken.element.contentWindow.postMessage(message, '*');
+            widget.element = widget.element || widget.getElement();
+            widget.element.contentWindow.postMessage(message, '*');
         } catch (e) {
-            console.error("no access to userToken object");
+            console.error("no access to widget object");
         }
     };
-    dispatchMethodReady(methodName);
+    widget.dispatchEvent({
+        type: "methodReady",
+        payload: {
+            methodName: methodName
+        }
+    });
 };
 
 
@@ -10856,7 +10852,7 @@ function checkMessage(event) {
     if (data && method) {
         if (method === "dispatchEvent") {
             console.log("dispatchEvent called");
-            userToken.dispatchEvent(args.shift());
+            widget.dispatchEvent(args.shift());
         } else if (method === "addMethod") {
             socket.bind(data.arguments[0]);
         } else {
@@ -10868,15 +10864,15 @@ function checkMessage(event) {
 function initialize(data) {
     //try { root = window; } catch (ignore) {}
     root = root || data.root;
-    userToken.data = iFrameData(data);
-    userToken.api = socket.api;
-    socket.id = userToken.data.socket_id;
-    userToken.setElement = function (el) {
+    widget.data = require('./iFrameData')(data);
+    widget.api = socket.api;
+    socket.id = widget.data.socket_id;
+    widget.setElement = function (el) {
         element = el;
-        return userToken;
+        return widget;
     };
     root.addEventListener('message', checkMessage, false);
-    return userToken;
+    return widget;
 }
 
 
@@ -11011,14 +11007,14 @@ describe('iFrame url test', function() {
 
 	beforeEach(function () {
 		iframe = parentClass({
-			"root": simWindow,
-		    "protocol": "http:",
-		    "domain": "www.site.com",
-		    "path": "",
-		    "id": "0jf28320h",
-		    "width": 640,
-		    "height": 360,
-		    "params": params
+			root: simWindow,
+		    protocol: "http:",
+		    domain: "www.site.com",
+		    path: "",
+		    id: "0jf28320h",
+		    width: 640,
+		    height: 360,
+		    params: params
 		}).setElement(simIframe);
 	});
 
