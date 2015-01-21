@@ -2,6 +2,7 @@ var JSAPI = {},
     initialized = false,
     iframeId = "",
     api = {},
+    pw, //parent window
     root;
 
 function onMessage(event) {
@@ -23,13 +24,13 @@ function onMessage(event) {
     if (data.hasOwnProperty("callback")) {
     }
     data.iframeId = iframeId;
-    parent.postMessage(data, "*");
+    pw.postMessage(data, "*");
 }
 
 function post() {
     var c = [];
     c = c.splice.call(arguments, 0);
-    parent.postMessage({
+    pw.postMessage({
         "method" : c.shift(),
         "arguments" : c,
         "iframeId" : iframeId
@@ -73,11 +74,9 @@ api = {
 
 module.exports = function (config) {
     root = config.root;
+    pw = config.parent;
     iframeId = config.id;
-
     addInitializeCallback();
-
     root.addEventListener('message', onMessage, false);
-
     return api;
 };

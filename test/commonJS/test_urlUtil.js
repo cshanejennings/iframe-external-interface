@@ -34,6 +34,8 @@ describe('iFrame url test', function() {
 		    "domain": "www.my.site.com/",
 		    "path": "/my/least-favorite-folder/least_favorite_file.html/",
 		    "id": "0jf28320h",
+		    "width": 640,
+		    "height": 360,
 		    "params": params
 		});
 		if (url !== final) {

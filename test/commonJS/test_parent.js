@@ -1,35 +1,58 @@
 var parentClass = require("../../src/parent/index"),
+  dispatcher = require('dispatch-token')(),
   chai = require('chai'),
   sinon = require('sinon'),
   sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
+// This test focuses on iframe creation and it's relationship to the parent
+
+
 describe('iFrame url test', function() {
-	var params = {
-	        "mIxEdCaseParam": "testMe",
-	        "number": 1,
-	        "url": "http://my.site.com/my/path/rf243664.json",
-	        "another_url": "http://your.site.com/ws/test/v1/c7q37k69.xml",
-	        "api_key": "hds94whfewo-9234-8hf4-9fh3-fh94377ehtso",
-	        "project_uuid": "fh493f42",
-	        "lang": "us_en",
-	        "width": 640,
-	        "height": 360
+	var sendWindowMsg,
+		simChildPostMessage = function (message, domain) {
+			console.log(message, domain);
+		},
+		simWindow = {
+			addEventListener: function (id, func) { sendWindowMsg = func; }
+		},
+		simIframe = {
+			contentWindow: {
+				"postMessage": simChildPostMessage
+			}
+		},
+		params = {
+	        testParam: "testMe"
 		},
 		iframe,
-		url = "http://www.my.site.com/my/least-favorite-folder/least_favorite_file.html?mIxEdCaseParam=testMe&amp;number=1&amp;url=http%3A%2F%2Fmy.site.com%2Fmy%2Fpath%2Frf243664.json&amp;another_url=http%3A%2F%2Fyour.site.com%2Fws%2Ftest%2Fv1%2Fc7q37k69.xml&amp;api_key=hds94whfewo-9234-8hf4-9fh3-fh94377ehtso&amp;project_uuid=fh493f42&amp;lang=us_en&amp;width=640&amp;height=360&amp;id=0jf28320h";
-	beforeEach(function(){
+		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;socket_id=";
+
+	beforeEach(function () {
 		iframe = parentClass({
+			"root": simWindow,
 		    "protocol": "http:",
-		    "domain": "www.my.site.com",
-		    "path": "my/least-favorite-folder/least_favorite_file.html",
+		    "domain": "www.site.com",
+		    "path": "",
 		    "id": "0jf28320h",
+		    "width": 640,
+		    "height": 360,
 		    "params": params
-		});
+		}).setElement(simIframe);
 	});
-	it('should produce the correct url', function () {
-		if (iframe.src !== url) {
+
+	it('should produce the correct url with socket_id', function () {
+		if (iframe.data.src !== url + iframe.data.socket_id) {
+			console.log("different?");
 			throw new Error("test method not returning correct string");
 		}
+		sendWindowMsg({
+			data: {
+				arguments: [
+					"testMethod"
+				],
+				socket_id: iframe.data.socket_id,
+				method: "addMethod"
+			}
+		});
 	});
 });

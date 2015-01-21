@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
     <!-- Note that this file name will need to be modified by grunt-init -->
-    <script src="../dist/pvp-sdk.require.js"></script>
+    <!-- <script src="../dist/pvp-sdk.require.js"></script> -->
   </head>
   <body>
     <div id="mocha"></div>
@@ -15,9 +15,9 @@
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script>
       'use strict';
-      mocha.setup('bdd')
-      mocha.slow(500)
-      mocha.timeout(3000)
+      mocha.setup('bdd');
+      mocha.slow(500);
+      mocha.timeout(3000);
     </script>
 
     <!-- load test suite -->
@@ -26,9 +26,9 @@
     <!-- kick of tests -->
     <script>
       if (window.mochaPhantomJS) {
-        window.mochaPhantomJS.run()
+        window.mochaPhantomJS.run();
       } else {
-        mocha.run()
+        mocha.run();
       }
     </script>
   </body>
