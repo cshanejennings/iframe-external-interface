@@ -1,11 +1,11 @@
-var dispatcher = require('dispatch-token'),
-    widget = dispatcher(),
-    postMessageBus = {
-        api: {},
-        widget: widget
-    },
-    element,
-    root;
+var dispatcher = require('dispatch-token');
+var widget = dispatcher();
+var postMessageBus = {
+    api: {},
+    widget: widget
+};
+var element;
+var root;
 
 // bind adds a method to the widget api with name methodName
 // the resulting function will take arguments and route those
@@ -13,12 +13,12 @@ var dispatcher = require('dispatch-token'),
 // the widgetId, the methodName and an arguments variable
 postMessageBus.bind = function (methodName) {
     widget.api[methodName] = function () {
-        var params = [],
-            message = {
-                id : postMessageBus.id,
-                method : methodName,
-                arguments: params.splice.call(arguments, 0)
-            };
+        var params = [];
+        var message = {
+            id: postMessageBus.id,
+            method: methodName,
+            arguments: params.splice.call(arguments, 0)
+        };
         try {
             // TODO: Create widget.element
             widget.element = widget.element || widget.getElement();
@@ -37,10 +37,10 @@ postMessageBus.bind = function (methodName) {
 
 // The methods that can be received from the child are fixed
 // for now.
-function receiveMessageFromChild(event) {
-    var data = event.data || {},
-        args = data.arguments,
-        method = data.method || "";
+function receiveMessageFromChild (event) {
+    var data = event.data || {};
+    var args = data.arguments;
+    var method = data.method || '';
     if (postMessageBus.id !== data.widgetId) {
         return;
     }
@@ -58,7 +58,7 @@ function receiveMessageFromChild(event) {
     }
 }
 
-function initialize(data) {
+function initialize (data) {
     //try { root = window; } catch (ignore) {}
     root = root || data.root;
     widget.data = require('./iFrameData')(data);
@@ -71,7 +71,6 @@ function initialize(data) {
     root.addEventListener('message', receiveMessageFromChild, false);
     return widget;
 }
-
 
 module.exports = function (data) {
     return initialize(data);

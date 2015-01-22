@@ -10806,14 +10806,14 @@ module.exports = function (data) {
 	};
 };
 },{"./tagUtil":61,"./urlUtil":62,"./widgetId":63}],60:[function(require,module,exports){
-var dispatcher = require('dispatch-token'),
-    widget = dispatcher(),
-    postMessageBus = {
-        api: {},
-        widget: widget
-    },
-    element,
-    root;
+var dispatcher = require('dispatch-token');
+var widget = dispatcher();
+var postMessageBus = {
+    api: {},
+    widget: widget
+};
+var element;
+var root;
 
 // bind adds a method to the widget api with name methodName
 // the resulting function will take arguments and route those
@@ -10821,12 +10821,12 @@ var dispatcher = require('dispatch-token'),
 // the widgetId, the methodName and an arguments variable
 postMessageBus.bind = function (methodName) {
     widget.api[methodName] = function () {
-        var params = [],
-            message = {
-                id : postMessageBus.id,
-                method : methodName,
-                arguments: params.splice.call(arguments, 0)
-            };
+        var params = [];
+        var message = {
+            id: postMessageBus.id,
+            method: methodName,
+            arguments: params.splice.call(arguments, 0)
+        };
         try {
             // TODO: Create widget.element
             widget.element = widget.element || widget.getElement();
@@ -10845,10 +10845,10 @@ postMessageBus.bind = function (methodName) {
 
 // The methods that can be received from the child are fixed
 // for now.
-function receiveMessageFromChild(event) {
-    var data = event.data || {},
-        args = data.arguments,
-        method = data.method || "";
+function receiveMessageFromChild (event) {
+    var data = event.data || {};
+    var args = data.arguments;
+    var method = data.method || '';
     if (postMessageBus.id !== data.widgetId) {
         return;
     }
@@ -10866,7 +10866,7 @@ function receiveMessageFromChild(event) {
     }
 }
 
-function initialize(data) {
+function initialize (data) {
     //try { root = window; } catch (ignore) {}
     root = root || data.root;
     widget.data = require('./iFrameData')(data);
@@ -10879,7 +10879,6 @@ function initialize(data) {
     root.addEventListener('message', receiveMessageFromChild, false);
     return widget;
 }
-
 
 module.exports = function (data) {
     return initialize(data);
@@ -10962,83 +10961,81 @@ describe('Browser context test', function() {
 	});
 });
 },{"../../src/index":58,"chai":1,"sinon":43,"sinon-chai":42}],65:[function(require,module,exports){
-var test_module = require("../../src/index"),
-  chai = require('chai'),
-  sinon = require('sinon'),
-  sinonChai = require('sinon-chai');
+var testModule = require('../../src/index');
+var chai = require('chai');
+//var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
-describe('Sample Test', function() {
-	it('should be using mocha', function() {
+describe('Sample Test', function () {
+	it('should be using mocha', function () {
 		if (false) {
 			throw new Error('false is true, buckle up...');
 		}
 	});
 	it('should be able to use the module', function () {
-		if (test_module.testMethod("test") !== "test:worked") {
-			throw new Error("test method not returning correct string");
+		if (testModule.testMethod('test') !== 'test:worked') {
+			throw new Error('test method not returning correct string');
 		}
 	});
 });
-},{"../../src/index":58,"chai":1,"sinon":43,"sinon-chai":42}],66:[function(require,module,exports){
-var parentClass = require("../../src/parent/index"),
-  dispatcher = require('dispatch-token')(),
-  chai = require('chai'),
-  sinon = require('sinon'),
-  sinonChai = require('sinon-chai');
+
+},{"../../src/index":58,"chai":1,"sinon-chai":42}],66:[function(require,module,exports){
+var parentClass = require('../../src/parent/index');
+var chai = require('chai');
+var expect = chai.expect;
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
 // This test focuses on iframe creation and it's relationship to the parent
 
-
-describe('iFrame url test', function() {
-	var childPostMessage,
-		PMToChild = function (message, domain) {
-			console.log(message, domain);
-		},
-		// 
-		simWindow = {
-			addEventListener: function (id, func) { childPostMessage = func; }
-		},
-		params = {
-	        testParam: "testMe"
-		},
-		iframe,
-		url = "http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;widgetId=";
+describe('iFrame url test', function () {
+	var childPostMessage;
+	var simWindow = {
+		addEventListener: function (id, func) { childPostMessage = func; }
+	};
+	var params = {
+        testParam: 'testMe'
+	};
+	var iframe;
+	var url = 'http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;widgetId=';
 
 	beforeEach(function () {
 		iframe = parentClass({
 			root: simWindow,
-		    protocol: "http:",
-		    domain: "www.site.com",
-		    path: "",
-		    id: "0jf28320h",
-		    width: 640,
-		    height: 360,
-		    params: params
+			protocol: 'http:',
+			domain: 'www.site.com',
+			path: '',
+			id: '0jf28320h',
+			width: 640,
+			height: 360,
+			params: params
 		});
 	});
 	it('should be able to receive a message from a child', function () {
-		//stub = sinon.stub();
+		var stub = sinon.stub();
 		iframe.element = {
 			contentWindow: {
-				"postMessage": function (message) {
-					console.log(message);
-				}
+				'postMessage': stub
 			}
 		};
 		childPostMessage({
 			data: {
-				method: "addMethod",
+				method: 'addMethod',
 				arguments: [
-					"testMethod"
+					'testMethod'
 				],
 				widgetId: iframe.data.widgetId
 			}
 		});
-		
+		iframe.api.testMethod('test');
+		/*jshint -W030 */
+		expect(stub).to.have.been.called;
+		expect(stub.firstCall.args[0].id).to.equal(iframe.data.widgetId);
+		expect(stub.firstCall.args[0].method).to.equal('testMethod');
+		expect(stub.firstCall.args[0].arguments).to.contain('test');
 		// creates iframe.api.testMethod, now we need to call that method
-		// 
 	});
 
 	it('should be able recieve a dispatch request from the child', function () {
@@ -11047,12 +11044,13 @@ describe('iFrame url test', function() {
 
 	it('should produce the correct url with widgetId', function () {
 		if (iframe.data.src !== url + iframe.data.widgetId) {
-			throw new Error("test method not returning correct string");
+			throw new Error('test method not returning correct string');
 		}
 
 	});
 });
-},{"../../src/parent/index":60,"chai":1,"dispatch-token":33,"sinon":43,"sinon-chai":42}],67:[function(require,module,exports){
+
+},{"../../src/parent/index":60,"chai":1,"sinon":43,"sinon-chai":42}],67:[function(require,module,exports){
 
 },{}],68:[function(require,module,exports){
 var urlUtil = require("../../src/parent/urlUtil");

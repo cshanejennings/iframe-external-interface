@@ -32,8 +32,6 @@
     },
     "disallowMultipleVarDecl": true,
     "disallowEmptyBlocks": true,
-    //"requireSpacesInsideObjectBrackets": "allButNested",                               // unsure
-    //"requireSpacesInsideArrayBrackets": "allButNested"                                 // unsure
     "disallowSpacesInsideParentheses": true,
     "disallowSpaceAfterObjectKeys": true,
     "requireCommaBeforeLineBreak": true,
@@ -51,7 +49,6 @@
     ],
     "requireSpaceAfterBinaryOperators": true,
     "disallowImplicitTypeConversion": ["numeric", "boolean", "binary", "string"],
-    //"requireCamelCaseOrUpperCaseIdentifiers": true,                                    // oauth prevents this
     "disallowKeywords": [ "with" ],
     "disallowMultipleLineStrings": true,
     "disallowMultipleLineBreaks": true,
@@ -63,12 +60,11 @@
     "disallowKeywordsOnNewLine": [ "else" ],
     "requireLineFeedAtFileEnd": true,
     "maximumLineLength": {
-        "value": 120,                                                                    // 120 for lib, 180 for test?
+        "value": 120, // 120 for lib, 180 for test?
         "tabSize": 2,
         "allowUrlComments": true,
         "allowRegex": true
     },
     "requireDotNotation": true,
-    // "requireYodaConditions": true,                                                    // unsure
     "disallowYodaConditions": true
 }

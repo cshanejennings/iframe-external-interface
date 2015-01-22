@@ -74,5 +74,14 @@
     "yui"           : false,    // Yahoo User Interface
 
     // Custom Globals
-    "globals"       : {}        // additional predefined global variables
+    "globals"       : {
+        "console": true,
+        "after": true,
+        "afterEach": true,
+        "before": true,
+        "beforeEach": true,
+        "describe": true,
+        "it": true,
+        "mocha": true
+    }        // additional predefined global variables
 }
