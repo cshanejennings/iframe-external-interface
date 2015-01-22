@@ -1,4 +1,4 @@
-/*! iframe-external-interface - v1.0.0 - 2015-01-21
+/*! iframe-external-interface - v1.0.0 - 2015-01-22
 * Copyright (c) 2015 [object Object];*/
 
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -10807,16 +10807,18 @@ module.exports = function (data) {
 };
 },{"./tagUtil":61,"./urlUtil":62,"./widgetId":63}],60:[function(require,module,exports){
 var dispatcher = require('dispatch-token'),
-    widget = dispatcher({
-        api: {}
-    }),
-    postMessageBus = dispatcher({
+    widget = dispatcher(),
+    postMessageBus = {
         api: {},
         widget: widget
-    }),
+    },
     element,
     root;
 
+// bind adds a method to the widget api with name methodName
+// the resulting function will take arguments and route those
+// arguments to the appropriate function in the child, using
+// the widgetId, the methodName and an arguments variable
 postMessageBus.bind = function (methodName) {
     widget.api[methodName] = function () {
         var params = [],
@@ -10826,6 +10828,7 @@ postMessageBus.bind = function (methodName) {
                 arguments: params.splice.call(arguments, 0)
             };
         try {
+            // TODO: Create widget.element
             widget.element = widget.element || widget.getElement();
             widget.element.contentWindow.postMessage(message, '*');
         } catch (e) {
@@ -10840,8 +10843,9 @@ postMessageBus.bind = function (methodName) {
     });
 };
 
-
-function checkMessage(event) {
+// The methods that can be received from the child are fixed
+// for now.
+function receiveMessageFromChild(event) {
     var data = event.data || {},
         args = data.arguments,
         method = data.method || "";
@@ -10854,6 +10858,7 @@ function checkMessage(event) {
             console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
         } else if (method === 'addMethod') {
+            // Add method will change the api signature for the child api
             postMessageBus.bind(data.arguments[0]);
         } else {
             console.warn('uncaught ' + data.method);
@@ -10871,7 +10876,7 @@ function initialize(data) {
         element = el;
         return widget;
     };
-    root.addEventListener('message', checkMessage, false);
+    root.addEventListener('message', receiveMessageFromChild, false);
     return widget;
 }
 
@@ -10987,17 +10992,13 @@ chai.use(sinonChai);
 
 
 describe('iFrame url test', function() {
-	var sendWindowMsg,
-		simChildPostMessage = function (message, domain) {
+	var childPostMessage,
+		PMToChild = function (message, domain) {
 			console.log(message, domain);
 		},
+		// 
 		simWindow = {
-			addEventListener: function (id, func) { sendWindowMsg = func; }
-		},
-		simIframe = {
-			contentWindow: {
-				"postMessage": simChildPostMessage
-			}
+			addEventListener: function (id, func) { childPostMessage = func; }
 		},
 		params = {
 	        testParam: "testMe"
@@ -11015,15 +11016,18 @@ describe('iFrame url test', function() {
 		    width: 640,
 		    height: 360,
 		    params: params
-		}).setElement(simIframe);
+		});
 	});
-
-	it('should produce the correct url with widgetId', function () {
-		if (iframe.data.src !== url + iframe.data.widgetId) {
-			console.log("different?");
-			throw new Error("test method not returning correct string");
-		}
-		sendWindowMsg({
+	it('should be able to receive a message from a child', function () {
+		//stub = sinon.stub();
+		iframe.element = {
+			contentWindow: {
+				"postMessage": function (message) {
+					console.log(message);
+				}
+			}
+		};
+		childPostMessage({
 			data: {
 				method: "addMethod",
 				arguments: [
@@ -11032,6 +11036,20 @@ describe('iFrame url test', function() {
 				widgetId: iframe.data.widgetId
 			}
 		});
+		
+		// creates iframe.api.testMethod, now we need to call that method
+		// 
+	});
+
+	it('should be able recieve a dispatch request from the child', function () {
+
+	});
+
+	it('should produce the correct url with widgetId', function () {
+		if (iframe.data.src !== url + iframe.data.widgetId) {
+			throw new Error("test method not returning correct string");
+		}
+
 	});
 });
 },{"../../src/parent/index":60,"chai":1,"dispatch-token":33,"sinon":43,"sinon-chai":42}],67:[function(require,module,exports){

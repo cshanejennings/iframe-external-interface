@@ -2,13 +2,12 @@ var serverRootUri = 'http://127.0.0.1:8000';
 var mochaPhantomJsTestRunner = serverRootUri + '/public/test/index.html';
 
 module.exports = function (grunt) {
-  "use strict";
-  function getBanner(pkg) {
+  function getBanner (pkg) {
     return [
       '/*! ' + pkg.name + ' - v' + pkg.version + ' - ',
-      grunt.template.today("yyyy-mm-dd") + '\n',
-      '* Copyright (c) ' + grunt.template.today("yyyy") + ' ' + pkg.author + ';*/\n'
-    ].join("");
+      grunt.template.today('yyyy-mm-dd') + '\n',
+      '* Copyright (c) ' + grunt.template.today('yyyy') + ' ' + pkg.author + ';*/\n'
+    ].join('');
   }
   // Project configuration.
   grunt.initConfig({
@@ -16,7 +15,7 @@ module.exports = function (grunt) {
 
     banner: getBanner(grunt.file.readJSON('package.json')),
 
-    files : {
+    files: {
       src: [
         'src/index.js'
       ],
@@ -36,8 +35,8 @@ module.exports = function (grunt) {
 
     jshint: {
       files: [
-        "<%= files.src %>",
-        "<%= files.test.commonJS %>",
+        '<%= files.src %>',
+        '<%= files.test.commonJS %>',
         'Gruntfile.js'
       ],
       options: {
@@ -59,6 +58,18 @@ module.exports = function (grunt) {
     clean: {
       files: ['./public/dist/*']
     },
+
+    // less: {
+    //   src: "",
+    //   dest: "",
+    //   build_less: {
+    //     options: {
+    //       modifyVars: {
+    //         primaryColor: "red"
+    //       }
+    //     }
+    //   }
+    // },
 
     browserify: {
       options: {
@@ -88,9 +99,9 @@ module.exports = function (grunt) {
           alias: [ './src/index.js:' ]
         }
       },
-      // These are the browserified tests. We need to browserify the tests to 
+      // These are the browserified tests. We need to browserify the tests to
       // be able to run the mocha tests while writing the tests as clean,
-      // simple CommonJS mocha tests (that is, without cross-platform 
+      // simple CommonJS mocha tests (that is, without cross-platform
       // boilerplate code). This build will also include the testing libs
       // chai, sinon and sinon-chai but must not include the module under test.
       tests: {
@@ -107,7 +118,7 @@ module.exports = function (grunt) {
           'public/dist/<%= pkg.name %>.standalone.min.js':
               ['<%= browserify.standalone.dest %>'],
           'public/dist/<%= pkg.name %>.require.min.js':
-              ['<%= browserify.require.dest %>'],
+              ['<%= browserify.require.dest %>']
         }
       }
     },
