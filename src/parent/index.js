@@ -21,8 +21,8 @@ postMessageBus.bind = function (methodName) {
         };
         try {
             // TODO: Create widget.element
-            widget.element = widget.element || widget.getElement();
-            widget.element.contentWindow.postMessage(message, '*');
+            element = element || widget.getElement();
+            element.contentWindow.postMessage(message, '*');
         } catch (e) {
             console.error('no access to widget object');
         }
@@ -47,7 +47,6 @@ function receiveMessageFromChild (event) {
 
     if (data && method) {
         if (method === 'dispatchEvent') {
-            console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
         } else if (method === 'addMethod') {
             // Add method will change the api signature for the child api

@@ -10829,8 +10829,8 @@ postMessageBus.bind = function (methodName) {
         };
         try {
             // TODO: Create widget.element
-            widget.element = widget.element || widget.getElement();
-            widget.element.contentWindow.postMessage(message, '*');
+            element = element || widget.getElement();
+            element.contentWindow.postMessage(message, '*');
         } catch (e) {
             console.error('no access to widget object');
         }
@@ -10855,7 +10855,6 @@ function receiveMessageFromChild (event) {
 
     if (data && method) {
         if (method === 'dispatchEvent') {
-            console.log('dispatchEvent called');
             widget.dispatchEvent(args.shift());
         } else if (method === 'addMethod') {
             // Add method will change the api signature for the child api
@@ -10961,26 +10960,6 @@ describe('Browser context test', function() {
 	});
 });
 },{"../../src/index":58,"chai":1,"sinon":43,"sinon-chai":42}],65:[function(require,module,exports){
-var testModule = require('../../src/index');
-var chai = require('chai');
-//var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-chai.use(sinonChai);
-
-describe('Sample Test', function () {
-	it('should be using mocha', function () {
-		if (false) {
-			throw new Error('false is true, buckle up...');
-		}
-	});
-	it('should be able to use the module', function () {
-		if (testModule.testMethod('test') !== 'test:worked') {
-			throw new Error('test method not returning correct string');
-		}
-	});
-});
-
-},{"../../src/index":58,"chai":1,"sinon-chai":42}],66:[function(require,module,exports){
 var parentClass = require('../../src/parent/index');
 var chai = require('chai');
 var expect = chai.expect;
@@ -10990,18 +10969,28 @@ chai.use(sinonChai);
 
 // This test focuses on iframe creation and it's relationship to the parent
 
-describe('iFrame url test', function () {
+describe('iFrame Parent Controller Test', function () {
 	var childPostMessage;
 	var simWindow = {
 		addEventListener: function (id, func) { childPostMessage = func; }
+	};
+	var messageData = {
+		data: {
+			method: 'addMethod',
+			arguments: [
+				'testMethod'
+			]
+		}
 	};
 	var params = {
         testParam: 'testMe'
 	};
 	var iframe;
+	var stub;
 	var url = 'http://www.site.com/?testParam=testMe&amp;width=640&amp;height=360&amp;widgetId=';
 
 	beforeEach(function () {
+		stub = sinon.stub();
 		iframe = parentClass({
 			root: simWindow,
 			protocol: 'http:',
@@ -11011,48 +11000,54 @@ describe('iFrame url test', function () {
 			width: 640,
 			height: 360,
 			params: params
-		});
-	});
-	it('should be able to receive a message from a child', function () {
-		var stub = sinon.stub();
-		iframe.element = {
+		}).setElement({
 			contentWindow: {
 				'postMessage': stub
 			}
-		};
-		childPostMessage({
-			data: {
-				method: 'addMethod',
-				arguments: [
-					'testMethod'
-				],
-				widgetId: iframe.data.widgetId
-			}
 		});
-		iframe.api.testMethod('test');
-		/*jshint -W030 */
-		expect(stub).to.have.been.called;
-		expect(stub.firstCall.args[0].id).to.equal(iframe.data.widgetId);
-		expect(stub.firstCall.args[0].method).to.equal('testMethod');
-		expect(stub.firstCall.args[0].arguments).to.contain('test');
-		// creates iframe.api.testMethod, now we need to call that method
+		messageData.data.widgetId = iframe.data.widgetId;
 	});
-
-	it('should be able recieve a dispatch request from the child', function () {
-
-	});
-
 	it('should produce the correct url with widgetId', function () {
 		if (iframe.data.src !== url + iframe.data.widgetId) {
 			throw new Error('test method not returning correct string');
 		}
 
 	});
+	it('should be able to receive a message from a child', function () {
+		childPostMessage(messageData);
+		iframe.api.testMethod('test');
+		/*jshint -W030 */
+		expect(stub).to.have.been.called;
+	});
+	it('should have correct message signature', function () {
+		childPostMessage(messageData);
+		iframe.api.testMethod('test');
+
+		var respData = stub.firstCall.args[0];
+		expect(respData.id).to.equal(iframe.data.widgetId);
+		expect(respData.method).to.equal('testMethod');
+		expect(respData.arguments).to.contain('test');
+		// creates iframe.api.testMethod, now we need to call that method
+	});
+
+	it('should be able to dispatch an event from the child', function () {
+		messageData.data.method = 'dispatchEvent';
+		messageData.data.arguments = [{
+			type: 'test',
+			payload: {
+				testNode: 'testVal'
+			}
+		}];
+		iframe.addEventListener('test', stub);
+		childPostMessage(messageData);
+		/*jshint -W030 */
+		expect(stub).to.have.been.called;
+	});
 });
 
-},{"../../src/parent/index":60,"chai":1,"sinon":43,"sinon-chai":42}],67:[function(require,module,exports){
+},{"../../src/parent/index":60,"chai":1,"sinon":43,"sinon-chai":42}],66:[function(require,module,exports){
 
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var urlUtil = require("../../src/parent/urlUtil");
 
 describe('iFrame url test', function() {
@@ -11098,4 +11093,4 @@ describe('iFrame url test', function() {
 		}
 	});
 });
-},{"../../src/parent/urlUtil":62}]},{},[65,66,67,68,64]);
+},{"../../src/parent/urlUtil":62}]},{},[65,66,67,64]);
