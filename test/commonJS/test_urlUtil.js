@@ -1,4 +1,4 @@
-var urlUtil = require('../../src/parent/urlUtil');
+var urlUtil = require('../../src/urlUtil');
 
 describe('iFrame url test', function () {
 	var params = {

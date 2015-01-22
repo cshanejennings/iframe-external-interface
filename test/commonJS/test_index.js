@@ -1,4 +1,4 @@
-var parentClass = require('../../src/parent/index');
+var parentClass = require('../../src/index');
 var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');

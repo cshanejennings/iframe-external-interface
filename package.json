@@ -1,5 +1,5 @@
 {
-  "name": "iframe-external-interface",
+  "name": "iframe-parent",
   "description": "An approach to iframe messaging similar to flash's External Interface class",
   "version": "1.0.0",
   "author": {

@@ -10784,12 +10784,6 @@ if (typeof module !== 'undefined' && module.exports) {
 });
 
 },{}],58:[function(require,module,exports){
-var api = {};
-api.testMethod = function (val) {
-  return val + ":worked";
-};
-module.exports = api;
-},{}],59:[function(require,module,exports){
 var urlUtil = require('./urlUtil'),
 	tagUtil = require('./tagUtil'),
 	widgetId = require ('./widgetId');
@@ -10805,7 +10799,7 @@ module.exports = function (data) {
 		widgetId: data.params.widgetId
 	};
 };
-},{"./tagUtil":61,"./urlUtil":62,"./widgetId":63}],60:[function(require,module,exports){
+},{"./tagUtil":60,"./urlUtil":61,"./widgetId":62}],59:[function(require,module,exports){
 var dispatcher = require('dispatch-token');
 var widget = dispatcher();
 var postMessageBus = {
@@ -10883,7 +10877,7 @@ module.exports = function (data) {
     return initialize(data);
 };
 
-},{"./iFrameData":59,"dispatch-token":33}],61:[function(require,module,exports){
+},{"./iFrameData":58,"dispatch-token":33}],60:[function(require,module,exports){
 module.exports = function (data, src) {
 	var html = '<iframe ';
 	html += 'id="' + data.id + '" ';
@@ -10899,7 +10893,7 @@ module.exports = function (data, src) {
 	html += 'src="' + src + '"';
 	return html + '></iframe>';
 };
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 function stripSlashes(str) {
 	str = str || "";
 	return str.replace(/^\/+|\/+$/g, '');
@@ -10934,7 +10928,7 @@ function getIFrameSrc(data) {
 module.exports = function (config) {
 	return getIFrameSrc(config);
 };
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 // unique identifier for the socket
 module.exports = function (l) {
     var text = "",
@@ -10945,7 +10939,7 @@ module.exports = function (l) {
     }
     return text;
 };
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var test_module = require("../../src/index"),
   chai = require('chai'),
   sinon = require('sinon'),
@@ -10959,8 +10953,8 @@ describe('Browser context test', function() {
 		}
 	});
 });
-},{"../../src/index":58,"chai":1,"sinon":43,"sinon-chai":42}],65:[function(require,module,exports){
-var parentClass = require('../../src/parent/index');
+},{"../../src/index":59,"chai":1,"sinon":43,"sinon-chai":42}],64:[function(require,module,exports){
+var parentClass = require('../../src/index');
 var chai = require('chai');
 var expect = chai.expect;
 var sinon = require('sinon');
@@ -11045,52 +11039,58 @@ describe('iFrame Parent Controller Test', function () {
 	});
 });
 
-},{"../../src/parent/index":60,"chai":1,"sinon":43,"sinon-chai":42}],66:[function(require,module,exports){
+},{"../../src/index":59,"chai":1,"sinon":43,"sinon-chai":42}],65:[function(require,module,exports){
+var urlUtil = require('../../src/urlUtil');
 
-},{}],67:[function(require,module,exports){
-var urlUtil = require("../../src/parent/urlUtil");
-
-describe('iFrame url test', function() {
+describe('iFrame url test', function () {
 	var params = {
-	        "mIxEdCaseParam": "testMe",
-	        "number": 1,
-	        "url": "http://my.site.com/my/path/rf243664.json",
-	        "another_url": "http://your.site.com/ws/test/v1/c7q37k69.xml",
-	        "api_key": "hds94whfewo-9234-8hf4-9fh3-fh94377ehtso",
-	        "project_uuid": "fh493f42",
-	        "lang": "us_en",
-	        "width": 640,
-	        "height": 360
-		},
-		url,
-		final = "http://www.my.site.com/my/least-favorite-folder/least_favorite_file.html?mIxEdCaseParam=testMe&amp;number=1&amp;url=http%3A%2F%2Fmy.site.com%2Fmy%2Fpath%2Frf243664.json&amp;another_url=http%3A%2F%2Fyour.site.com%2Fws%2Ftest%2Fv1%2Fc7q37k69.xml&amp;api_key=hds94whfewo-9234-8hf4-9fh3-fh94377ehtso&amp;project_uuid=fh493f42&amp;lang=us_en&amp;width=640&amp;height=360";
+		'mIxEdCaseParam': 'testMe',
+		'number': 1,
+		'url': 'http://my.site.com/my/path/rf243664.json',
+		'another_url': 'http://your.site.com/ws/test/v1/c7q37k69.xml',
+		'api_key': 'hds94whfewo-9234-8hf4-9fh3-fh94377ehtso',
+		'project_uuid': 'fh493f42',
+		'lang': 'us_en',
+		'width': 640,
+		'height': 360
+	};
+	var url;
+	var finalURL = [
+		'http://www.my.site.com/my/least-favorite-folder/least_favorite_file.',
+		'html?mIxEdCaseParam=testMe&amp;number=1&amp;url=http%3A%2F%2Fmy.site',
+		'.com%2Fmy%2Fpath%2Frf243664.json&amp;another_url=http%3A%2F%2Fyour.',
+		'site.com%2Fws%2Ftest%2Fv1%2Fc7q37k69.',
+		'xml&amp;api_key=hds94whfewo-9234-8hf4-9fh3-fh94377ehtso&amp;',
+		'project_uuid=fh493f42&amp;lang=us_en&amp;width=640&amp;height=360'
+		].join('');
 
 	it('should produce the correct src attribute', function () {
 		url = urlUtil({
-		    "protocol": "http:",
-		    "domain": "www.my.site.com",
-		    "path": "my/least-favorite-folder/least_favorite_file.html",
-		    "id": "0jf28320h",
-		    "params": params
+			'protocol': 'http:',
+			'domain': 'www.my.site.com',
+			'path': 'my/least-favorite-folder/least_favorite_file.html',
+			'id': '0jf28320h',
+			'params': params
 		});
-		if (url !== final) {
-			throw new Error("test method not returning correct string");
+		if (url !== finalURL) {
+			throw new Error('test method not returning correct string');
 		}
 	});
 
 	it('should produce src attribute with extra slashes', function () {
 		url = urlUtil({
-		    "protocol": "http://",
-		    "domain": "www.my.site.com/",
-		    "path": "/my/least-favorite-folder/least_favorite_file.html/",
-		    "id": "0jf28320h",
-		    "width": 640,
-		    "height": 360,
-		    "params": params
+			'protocol': 'http://',
+			'domain': 'www.my.site.com/',
+			'path': '/my/least-favorite-folder/least_favorite_file.html/',
+			'id': '0jf28320h',
+			'width': 640,
+			'height': 360,
+			'params': params
 		});
-		if (url !== final) {
-			throw new Error("test method not returning correct string");
+		if (url !== finalURL) {
+			throw new Error('test method not returning correct string');
 		}
 	});
 });
-},{"../../src/parent/urlUtil":62}]},{},[65,66,67,64]);
+
+},{"../../src/urlUtil":61}]},{},[64,65,63]);
